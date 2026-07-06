@@ -111,8 +111,8 @@ EOT
   type = map(object({
     name                                 = string
     scope                                = string
-    advanced_filtering_on_arrays_enabled = optional(bool, false)
-    event_delivery_schema                = optional(string, "EventGridSchema")
+    advanced_filtering_on_arrays_enabled = optional(bool)   # Default: false
+    event_delivery_schema                = optional(string) # Default: "EventGridSchema"
     eventhub_endpoint_id                 = optional(string)
     expiration_time_utc                  = optional(string)
     hybrid_connection_endpoint_id        = optional(string)
@@ -242,5 +242,13 @@ EOT
       url                               = string
     }))
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.eventgrid_event_subscriptions : (
+        length(v.scope) > 0
+      )
+    ])
+    error_message = "must not be empty"
+  }
 }
 
